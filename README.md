@@ -121,6 +121,8 @@ hdfs dfs -cat /user/hadoop/output/part-00000 | sort -n -r -k2,2 | head
 ```
 El cual nos dá el siguiente resultado:
 
+|   |   |
+|---|---|
 | que | 10007552 |
 | de | 9284096 |
 | y | 8179712 |
