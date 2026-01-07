@@ -146,6 +146,7 @@ Un clúster de HDFS es un sistema distribuído de archivos tipo Master/Slave, do
 
 #### 8. ¿Cuál es el factor de replicación del fichero? 
 El presente ejercicio de WordCount se ejecutó en un clúster pseudo distribuído. Debido a esto, los procesos (daemons) de Hadoop fueron ejecutados en máquinas virtuales java (JVM) independientes dentro de una misma computadora.
+
 ![ ](https://media.geeksforgeeks.org/wp-content/uploads/20200617153408/223-1.png  "(crédito Geeks for Geeks)")
 
 Debido a que existe un solo DataNode en un sistema HDFS pseudo distribuído, el factor de replicación se establece típicamente en 1.
@@ -189,6 +190,8 @@ En resumen, el proceso se compone de las siguientes fases:
 Se decidió emplear la utilidad [Hadoop Streaming](https://hadoop.apache.org/docs/current/api/org/apache/hadoop/streaming/package-summary.html) para crear una nueva aplicación que descartara las preposiciones en el WordCount.
 
 El código inicial para el Mapper y el Reducer fue tomado del tutorial [Hadoop Streaming Using Python - Word Count Problem](https://www.geeksforgeeks.org/python/hadoop-streaming-using-python-word-count-problem/) , aplicando un refactoring para descartar  [las 23 preposiciones del español](https://www.rae.es/gram%C3%A1tica-b%C3%A1sica/la-preposici%C3%B3n-la-conjunci%C3%B3n-la-interjecci%C3%B3n/la-preposici%C3%B3n/las-preposiciones-del-espa%C3%B1ol) , y adecuar el código a la versión mas moderna de python.
+
+
 
 La versión mas actualizada del `hadoop-streaming.jar` fue descargada de este [link](https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-streaming/3.4.2/hadoop-streaming-3.4.2.jar) .
 
