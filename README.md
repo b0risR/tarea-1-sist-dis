@@ -187,11 +187,65 @@ En resumen, el proceso se compone de las siguientes fases:
 ![ ](https://ars.els-cdn.com/content/image/3-s2.0-B978012803192600013X-f13-02-9780128031926.jpg  "https://www.sciencedirect.com/topics/engineering/mapreduce")
 
 #### 12. (Opcional) Crea una nueva versión del código Java basado en MapReduce para resolver la siguiente pregunta: ¿Cuáles son las 10 primeras palabras sin contar preposiciones? 
-Se decidió emplear la utilidad [Hadoop Streaming](https://hadoop.apache.org/docs/current/api/org/apache/hadoop/streaming/package-summary.html) para crear una nueva aplicación que descartara las preposiciones en el WordCount.
+Se decidió emplear la utilidad [Hadoop Streaming](https://hadoop.apache.org/docs/current/api/org/apache/hadoop/streaming/package-summary.html) para crear una nueva aplicación empleando python, que descartara las preposiciones en el WordCount.
 
-El código inicial para el Mapper y el Reducer fue tomado del tutorial [Hadoop Streaming Using Python - Word Count Problem](https://www.geeksforgeeks.org/python/hadoop-streaming-using-python-word-count-problem/) , aplicando un refactoring para descartar  [las 23 preposiciones del español](https://www.rae.es/gram%C3%A1tica-b%C3%A1sica/la-preposici%C3%B3n-la-conjunci%C3%B3n-la-interjecci%C3%B3n/la-preposici%C3%B3n/las-preposiciones-del-espa%C3%B1ol) , y adecuar el código a la versión mas moderna de python.
+Los códigos iniciales en python para el Mapper y el Reducer fueron tomados del tutorial [Hadoop Streaming Using Python - Word Count Problem](https://www.geeksforgeeks.org/python/hadoop-streaming-using-python-word-count-problem/) , modificando los códigos para descartar  [las 23 preposiciones del español](https://www.rae.es/gram%C3%A1tica-b%C3%A1sica/la-preposici%C3%B3n-la-conjunci%C3%B3n-la-interjecci%C3%B3n/la-preposici%C3%B3n/las-preposiciones-del-espa%C3%B1ol) , y adecuarlos a la versión mas moderna de python.
 
+[python-no-prepocisiones/mapper.py](https://github.com/b0risR/tarea-1-sist-dis/blob/4c312bd241b9558d3c5691f792a7cfa54b592447/python-no-prepocisiones/mapper.py)
 
+[python/reducer.py](https://github.com/b0risR/tarea-1-sist-dis/blob/deda0e04c981e390d503bc8688b06d55fd02f223/python/reducer.py)
+
+Deben ejecutarse los comandos  `chmod 777 mapper.py`  y `chmod 777 reducer.py` para cambiar los permisos a `read, write, execute` .
 
 La versión mas actualizada del `hadoop-streaming.jar` fue descargada de este [link](https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-streaming/3.4.2/hadoop-streaming-3.4.2.jar) .
+
+El siguiente comando ejecutará los script de python modificados y guardará el resultado en el directorio  `/user/hadoop/output3` del clúster HDFS:
+```bash
+hadoop jar /home/hadoop/ueaMasterBD/hadoop-streaming-3.4.2.jar \
+-input /user/hadoop/input/* \
+-output /user/hadoop/output3 \
+-mapper /home/hadoop/ueaMasterBD/tarea-1-sist-dis/python-no-prepocisiones/mapper.py \
+-reducer /home/hadoop/ueaMasterBD/tarea-1-sist-dis/python/reducer.py
+```
+Dando como resultado las 10 primeras palabras sin contar preposiciones:
+
+|   |   |
+|---|---|
+| que | 10007552 |
+| y | 8179712 |
+| la | 5288448 |
+| el | 4100608 |
+| no | 2878464 |
+| se | 2432512 |
+| los | 2406912 |
+| las | 1761280 |
+| lo | 1750016 |
+| le | 1743360 |
+
+#### 13. (Opcional) Crea una nueva versión del código Java basado en MapReduce para resolver la siguiente pregunta: ¿Cuáles son las 10 letras más repetidas? 
+Nuevamente se decidió responder esta pregunta empleando python y Hadoop Streaming. Se creó un nuevo script tomando como base el script del ejercicio anterior, esta vez incluyendo una funcion en regex que genera un  `True` or  `False` al comparar el token con las letras del abecedario.
+
+[python-single-letter/mapper.py](https://github.com/b0risR/tarea-1-sist-dis/blob/deda0e04c981e390d503bc8688b06d55fd02f223/python-single-letter/mapper.py)
+
+Y el siguiente comando ejecutará los script de python modificados, guardando el resultado en el directorio  `/user/hadoop/output5` del clúster HDFS:
+```bash
+hadoop jar /home/hadoop/ueaMasterBD/hadoop-streaming-3.4.2.jar \
+-input /user/hadoop/input/* \
+-output /user/hadoop/output5 \
+-mapper /home/hadoop/ueaMasterBD/tarea-1-sist-dis/python-single-letter/mapper.py \
+-reducer /home/hadoop/ueaMasterBD/tarea-1-sist-dis/python/reducer.py
+```
+Como nota curiosa, el resultado arrojó 9 letras repetidas en el archivo  `big-quijote.txt` :
+
+|   |   |
+|---|---|
+| y | 8179712 |
+| a | 4929024 |
+| o | 595456 |
+| Y | 343040 |
+| A | 139264 |
+| e | 36864 |
+| O | 3584 |
+| i | 512 |
+| X | 512 |
 
