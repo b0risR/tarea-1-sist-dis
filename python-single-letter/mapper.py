@@ -5,7 +5,7 @@
 import sys
 import re
 
-def letraUnica(word):
+def esLetraUnica(word):
     regex = r'^[a-zA-Z]$'
     return bool(re.fullmatch(regex, word))
 
@@ -22,5 +22,5 @@ for line in sys.stdin:
         # write the results to STDOUT (standard output);
         # what we output here will be the input for the
         # Reduce step, i.e. the input for reducer.py
-        if letraUnica(word) :
+        if esLetraUnica(word) :
             print(f"{word}\t{1}")
