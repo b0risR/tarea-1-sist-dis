@@ -104,7 +104,7 @@ wc.jar
 ```bash
 hadoop jar wc.jar WordCount /user/hadoop/input /user/hadoop/output
 ```
-Para ver el contenido de  `output` ejecutamos el siguiente comando:
+Para ver el contenido del directorio  `output` ejecutamos el siguiente comando:
 ```bash
 hadoop dfs -ls /user/hadoop/output
 ```
@@ -160,10 +160,33 @@ Lo anterior podemos corroborarlo examinando la configuración establecida en el 
 ```
 
 #### 9.  ¿En cuántos bloques se ha dividido? 
-
+En el presente ejercicio, de la ejecución del comando
+```bash
+hadoop jar wc.jar WordCount /user/hadoop/input /user/hadoop/output
+```
+Podemos observar la siguiente información en el CLI:
+```bash
+hadoop jar wc.jar WordCount /user/hadoop/input /user/hadoop/output
+2026-01-08 00:14:50,481 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /0.0.0.0:8032
+2026-01-08 00:14:50,780 WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+2026-01-08 00:14:50,807 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/hadoop/.staging/job_1767827162860_0001
+2026-01-08 00:14:51,536 INFO input.FileInputFormat: Total input files to process : 1
+2026-01-08 00:14:52,417 INFO mapreduce.JobSubmitter: number of splits:9
+```
+Por tanto podemos decir que el fichero  `big-quijote.txt` fue dividido en 9 bloques o  `splits` .
 
 #### 10. Si ejecuto de nuevo el mismo comando para cargar el fichero en HDFS, ¿qué ocurre? Explica el resultado obtenido. 
+Al ejecutar el mismo comando  `-put`  empleado anteriormente:
+```bash
+hdfs dfs -put ueaMasterBD/input/* input
+```
+Obtenemos la siguiente respuesta:
+```bash
+put: `input/big-quijote.txt': File exists
+```
+Esto es debido a que Hadoop sigue la regla de "Write-Once-Read-Many" o WORM, por lo que no sobre escribirá ficheros existentes para prevenir pérdidas de datos accidentales.
 
+Esta misma regla se aplica para escribir los resultados de MapReduce en  `output` , donde abortará el proceso si ya existe el directorio previamente.
 
 #### 11. ¿Cómo se ha ejecutado el WordCount utilizando el framework de MapReduce?
 El framework de Apache Hadoop aplica la estrategia de llevar las tareas computacionales a donde están almacenados los datos, siendo estas tareas los trabajos (jobs) de MapReduce. Por tanto, el nodo de computación y el de almacenamiento son el mismo.
@@ -171,9 +194,9 @@ El framework de Apache Hadoop aplica la estrategia de llevar las tareas computac
 Cada bloque de 128MB del fichero es procesado en simultáneo. La aplicación WordCount fue ejecutada de la siguiente forma:
 
 - Cada bloque de 128MB es asignado a un Mapper. Este lee la data, y aplica la función definida en la aplicación para transformarla en un conjunto de pares  `<key,value>`  . Es necesario que los datos producidos sean del tipo  `<key,value>`  porque MapReduce opera exclusivamente con este tipo de datos.
-- El conjunto de pares  `<key,value>`  de todos los nodos es redistribuída de acuerdo a la clave. Una función hash determina cuál nodo obtiene cuál conjunto de pares, para asegurar una carga de trabajo balanceada.
-- Cada nodo que ejecutó la función Mapper ahora ejecuta la función Reducer agregando los datos del conjunto asignado.
-- Una vez ejecutada la función Reducer por todos los nodos, se consolidan los resultados escribiéndolos en un archivo.
+- Los pares  `<key,value>`  de todos los nodos son redistribuídos de acuerdo al valor  `key` . Una función hash determina cuál nodo obtiene cuál conjunto de pares, para asegurar una carga de trabajo balanceada.
+- Cada nodo que ejecutó la función Mapper ahora ejecuta la función Reducer, mediante una agregación de datos según el valor  `key` .
+- Una vez ejecutada la función Reducer por todos los nodos, se consolidan los resultados en un archivo en HDFS.
 
 En resumen, el proceso se compone de las siguientes fases:
 
@@ -181,8 +204,8 @@ En resumen, el proceso se compone de las siguientes fases:
 - Splitting = división en bloques
 - Mapping = creación de conjuntos  `<key,value>`
 - Shuffling = agrupado por  `key`  y redistribución
-- Reducing = agregado de cada conjunto
-- Resultado final por cada valor de `key`
+- Reducing = agregación de datos de cada conjunto
+- Resultado final de las agregaciones en un solo archivo
 
 ![ ](https://ars.els-cdn.com/content/image/3-s2.0-B978012803192600013X-f13-02-9780128031926.jpg  "https://www.sciencedirect.com/topics/engineering/mapreduce")
 
@@ -235,7 +258,7 @@ hadoop jar /home/hadoop/ueaMasterBD/hadoop-streaming-3.4.2.jar \
 -mapper /home/hadoop/ueaMasterBD/tarea-1-sist-dis/python-single-letter/mapper.py \
 -reducer /home/hadoop/ueaMasterBD/tarea-1-sist-dis/python/reducer.py
 ```
-Como nota curiosa, el resultado arrojó 9 letras repetidas en el archivo  `big-quijote.txt` :
+Como nota curiosa, el resultado arrojó solo 9 letras repetidas en el archivo  `big-quijote.txt` :
 
 |   |   |
 |---|---|
