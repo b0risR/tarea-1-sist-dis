@@ -61,7 +61,7 @@ start-dfs.sh
 start-yarn.sh
 jps
 ```
-Comprobado que están activos los procesos de OpenSSH, Hadoop y YARN, y el clúster HDFS se inició correctamente, procedemos a ejecutar el ejercicio de WordCount.
+Al haber comprobado que están activos los [daemon](https://www.geeksforgeeks.org/data-engineering/hadoop-daemons-and-their-features/) de OpenSSH, Hadoop y YARN, y el clúster HDFS se inició correctamente, procedemos a ejecutar el ejercicio de WordCount.
 #### 1. Descarga del archivo [big-quijote.txt](https://objectstorage.eu-paris-1.oraclecloud.com/n/emeasespainsandbox/b/hadoop/o/big-quijote.txt) :
 Ejecutamos el siguiente comando dentro del directorio local del proyecto `ueaMasterBD/input/`:
 ```bash
@@ -108,7 +108,7 @@ Para ver el contenido del directorio  `output` ejecutamos el siguiente comando:
 ```bash
 hadoop dfs -ls /user/hadoop/output
 ```
-#### 5. Análisis del resultado de WordCount:
+#### 5. Análisis del resultado de WordCount. Resultado de las 10 palabras más repetidas en el fichero analizado.
 Podemos ejecutar el siguiente comando si queremos ver el resultado generado por la aplicación  `WordCount`
 ```bash
 hdfs dfs -cat /user/hadoop/output/part-r-00000
@@ -147,7 +147,8 @@ Un clúster de HDFS es un sistema distribuído de archivos tipo Master/Slave, do
 #### 8. ¿Cuál es el factor de replicación del fichero? 
 El presente ejercicio de WordCount se ejecutó en un clúster pseudo distribuído. Debido a esto, los procesos (daemons) de Hadoop fueron ejecutados en máquinas virtuales java (JVM) independientes dentro de una misma computadora.
 
-![ ](https://media.geeksforgeeks.org/wp-content/uploads/20200617153408/223-1.png  "(crédito Geeks for Geeks)")
+![ ](https://media.geeksforgeeks.org/wp-content/uploads/20200617153408/223-1.png)\
+(imagen de https://www.geeksforgeeks.org/data-engineering/hadoop-different-modes-of-operation/)
 
 Debido a que existe un solo DataNode en un sistema HDFS pseudo distribuído, el factor de replicación se establece típicamente en 1.
 
@@ -207,12 +208,14 @@ En resumen, el proceso se compone de las siguientes fases:
 - Reducing = agregación de datos de cada conjunto
 - Resultado final de las agregaciones en un solo archivo
 
-![ ](https://ars.els-cdn.com/content/image/3-s2.0-B978012803192600013X-f13-02-9780128031926.jpg  "https://www.sciencedirect.com/topics/engineering/mapreduce")
+![ ](https://ars.els-cdn.com/content/image/3-s2.0-B978012803192600013X-f13-02-9780128031926.jpg)\
+(imagen de https://www.sciencedirect.com/topics/engineering/mapreduce)
 
 #### 12. (Opcional) Crea una nueva versión del código Java basado en MapReduce para resolver la siguiente pregunta: ¿Cuáles son las 10 primeras palabras sin contar preposiciones? 
-Se decidió emplear la utilidad [Hadoop Streaming](https://hadoop.apache.org/docs/current/api/org/apache/hadoop/streaming/package-summary.html) para crear una nueva aplicación empleando python, que descartara las preposiciones en el WordCount.
+Se decidió emplear la utilidad [Hadoop Streaming](https://hadoop.apache.org/docs/current/api/org/apache/hadoop/streaming/package-summary.html) para crear una nueva aplicación MapReduce empleando python, que descartará las preposiciones durante la ejecución del WordCount.
 
-Los códigos iniciales en python para el Mapper y el Reducer fueron tomados del tutorial [Hadoop Streaming Using Python - Word Count Problem](https://www.geeksforgeeks.org/python/hadoop-streaming-using-python-word-count-problem/) , modificando los códigos para descartar  [las 23 preposiciones del español](https://www.rae.es/gram%C3%A1tica-b%C3%A1sica/la-preposici%C3%B3n-la-conjunci%C3%B3n-la-interjecci%C3%B3n/la-preposici%C3%B3n/las-preposiciones-del-espa%C3%B1ol) , y adecuarlos a la versión mas moderna de python.
+Los scripts iniciales en python para el Mapper y el Reducer fueron tomados del tutorial [Hadoop Streaming Using Python - Word Count Problem](https://www.geeksforgeeks.org/python/hadoop-streaming-using-python-word-count-problem/).\
+Estos scripts fueron modificados para descartar [las 23 preposiciones del español](https://www.rae.es/gram%C3%A1tica-b%C3%A1sica/la-preposici%C3%B3n-la-conjunci%C3%B3n-la-interjecci%C3%B3n/la-preposici%C3%B3n/las-preposiciones-del-espa%C3%B1ol) , y hacerlos compatibles con la versión mas moderna de python.
 
 [python-no-prepocisiones/mapper.py](https://github.com/b0risR/tarea-1-sist-dis/blob/4c312bd241b9558d3c5691f792a7cfa54b592447/python-no-prepocisiones/mapper.py)
 
@@ -220,9 +223,9 @@ Los códigos iniciales en python para el Mapper y el Reducer fueron tomados del 
 
 Deben ejecutarse los comandos  `chmod 777 mapper.py`  y `chmod 777 reducer.py` para cambiar los permisos a `read, write, execute` .
 
-La versión mas actualizada del `hadoop-streaming.jar` fue descargada de este [link](https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-streaming/3.4.2/hadoop-streaming-3.4.2.jar) .
+La versión mas actualizada del `hadoop-streaming.jar` fue descargada del repositorio de maven [org/apache/hadoop/hadoop-streaming/3.4.2](https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-streaming/3.4.2/hadoop-streaming-3.4.2.jar).
 
-El siguiente comando ejecutará los script de python modificados y guardará el resultado en el directorio  `/user/hadoop/output3` del clúster HDFS:
+El siguiente comando ejecutará los script de python y guardará el resultado en el directorio  `/user/hadoop/output3` del clúster HDFS:
 ```bash
 hadoop jar /home/hadoop/ueaMasterBD/hadoop-streaming-3.4.2.jar \
 -input /user/hadoop/input/* \
@@ -246,11 +249,11 @@ Dando como resultado las 10 primeras palabras sin contar preposiciones:
 | le | 1743360 |
 
 #### 13. (Opcional) Crea una nueva versión del código Java basado en MapReduce para resolver la siguiente pregunta: ¿Cuáles son las 10 letras más repetidas? 
-Nuevamente se decidió responder esta pregunta empleando python y Hadoop Streaming. Se creó un nuevo script tomando como base el script del ejercicio anterior, esta vez incluyendo una funcion en regex que genera un  `True` or  `False` al comparar el token con las letras del abecedario.
+Para responder esta pregunta, nuevamente se decidió emplear python y Hadoop Streaming. Se creó un nuevo script para el Mapper tomando como base el script del ejercicio anterior, esta vez incluyendo una función en regex que genera un  `True` or  `False` al comparar cada token con las letras del abecedario.
 
 [python-single-letter/mapper.py](https://github.com/b0risR/tarea-1-sist-dis/blob/deda0e04c981e390d503bc8688b06d55fd02f223/python-single-letter/mapper.py)
 
-Y el siguiente comando ejecutará los script de python modificados, guardando el resultado en el directorio  `/user/hadoop/output5` del clúster HDFS:
+El siguiente comando ejecutará los script de python guardando el resultado en el directorio  `/user/hadoop/output5` del clúster HDFS:
 ```bash
 hadoop jar /home/hadoop/ueaMasterBD/hadoop-streaming-3.4.2.jar \
 -input /user/hadoop/input/* \
