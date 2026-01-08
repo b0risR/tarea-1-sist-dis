@@ -100,7 +100,7 @@ wc.jar
 
 - En nuestro caso, creando un archivo con el conteo de todas las palabras presentes en el archivo  `big-quijote.txt`.
 
-- La aplicación  `WordCount` creará de forma automática el directorio  `output` dentro del clúster, conteniendo el archivo con el conteo:
+- La aplicación  `WordCount` creará de forma automática el directorio  `output` dentro del clúster, conteniendo el archivo con el resultado:
 ```bash
 hadoop jar wc.jar WordCount /user/hadoop/input /user/hadoop/output
 ```
@@ -109,7 +109,7 @@ Para ver el contenido del directorio  `output` ejecutamos el siguiente comando:
 hadoop dfs -ls /user/hadoop/output
 ```
 #### 5. Análisis del resultado de WordCount:
-Podemos ejecutar el siguiente comando si queremos ver el resultado generado por la aplicación  `WordCount` :
+Podemos ejecutar el siguiente comando si queremos ver el resultado generado por la aplicación  `WordCount`
 ```bash
 hdfs dfs -cat /user/hadoop/output/part-r-00000
 ```
